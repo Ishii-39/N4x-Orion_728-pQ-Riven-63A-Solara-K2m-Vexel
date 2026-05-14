@@ -1,0 +1,1879 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Daily Tracker</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500;700&family=Noto+Sans+JP:wght@400;500&display=swap');
+
+  :root {
+    --bg: #FAF6EE;
+    --surface: #FFFFFF;
+    --ink: #1F1B16;
+    --ink-muted: #6B655A;
+    --accent: #4A5A7A;
+    --accent-soft: #E8ECF3;
+    --border: #E5DDD0;
+    --success: #4F7A4A;
+    --danger: #B0463C;
+    --radius: 4px;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container {
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 24px 16px 80px;
+  }
+
+  header {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+  }
+
+  h1 {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 4px;
+    letter-spacing: 0.02em;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    color: var(--ink-muted);
+  }
+
+  .date-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .date-bar label {
+    font-size: 13px;
+    color: var(--ink-muted);
+  }
+
+  .date-bar input[type="date"] {
+    flex: 1;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    font-size: 15px;
+    font-family: inherit;
+    color: var(--ink);
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .card h2 {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 17px;
+    font-weight: 500;
+    margin: 0 0 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    letter-spacing: 0.02em;
+  }
+
+  .field {
+    margin-bottom: 14px;
+  }
+
+  .field-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  label.field-label {
+    display: block;
+    font-size: 13px;
+    color: var(--ink-muted);
+    margin-bottom: 4px;
+  }
+
+  input[type="time"],
+  input[type="number"],
+  input[type="text"],
+  input[type="url"],
+  select,
+  textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    font-size: 15px;
+    font-family: inherit;
+    color: var(--ink);
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 60px;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  button {
+    padding: 10px 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--ink);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+
+  button:hover { background: var(--bg); }
+  button:active { transform: translateY(1px); }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  button.primary {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+    font-weight: 500;
+  }
+  button.primary:hover { background: #3D4D6A; }
+
+  .meal-type-group {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+  }
+
+  .meal-type-group label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 14px;
+    cursor: pointer;
+    background: var(--surface);
+  }
+
+  .meal-type-group input[type="radio"] { display: none; }
+
+  .meal-type-group label:has(input:checked) {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+  }
+
+  .weather-type-group {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+  .weather-type-group label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 4px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 13px;
+    cursor: pointer;
+    background: var(--surface);
+  }
+  .weather-type-group input[type="radio"] { display: none; }
+  .weather-type-group label:has(input:checked) {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+  }
+
+  /* ルーティン項目 */
+  .routine-hint {
+    font-size: 12px;
+    color: var(--ink-muted);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--border);
+  }
+
+  .routine-item {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .routine-item:last-child { border-bottom: none; padding-bottom: 0; }
+
+  .routine-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+    gap: 8px;
+  }
+
+  .routine-item-name {
+    font-weight: 500;
+    font-size: 15px;
+  }
+
+  .routine-item-meta {
+    font-size: 11px;
+    color: var(--ink-muted);
+    white-space: nowrap;
+    background: var(--bg);
+    padding: 2px 6px;
+    border-radius: var(--radius);
+  }
+
+  .binary-toggle {
+    display: flex;
+    gap: 8px;
+  }
+
+  .binary-toggle button {
+    flex: 1;
+    padding: 10px;
+    font-size: 15px;
+    font-weight: 500;
+  }
+  .binary-toggle button.flash-ok {
+    background: var(--success);
+    color: white;
+    border-color: var(--success);
+  }
+  .binary-toggle button.flash-ng {
+    background: var(--danger);
+    color: white;
+    border-color: var(--danger);
+  }
+
+  .numeric-row {
+    display: flex;
+    gap: 8px;
+  }
+  .numeric-row input { flex: 1; }
+
+  .time-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .time-row input {
+    width: 70px;
+    text-align: center;
+    padding: 10px 6px;
+  }
+  .time-row .time-unit {
+    font-size: 13px;
+    color: var(--ink-muted);
+  }
+  .time-row button {
+    margin-left: auto;
+  }
+
+  .fraction-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .fraction-row input {
+    width: 80px;
+    text-align: center;
+    padding: 10px 6px;
+  }
+  .fraction-divider {
+    font-size: 18px;
+    color: var(--ink-muted);
+    font-weight: 500;
+  }
+  .fraction-row button {
+    margin-left: auto;
+  }
+
+  .hiragana-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .hiragana-row input {
+    width: 80px;
+    text-align: center;
+    font-size: 18px;
+    padding: 10px 6px;
+  }
+  .hiragana-row .hiragana-hint {
+    font-size: 12px;
+    color: var(--ink-muted);
+  }
+  .hiragana-row button {
+    margin-left: auto;
+  }
+
+  .training-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .training-fields .training-menu {
+    width: 100%;
+  }
+  .training-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .training-row input[type="number"] {
+    width: 75px;
+    text-align: center;
+    padding: 10px 6px;
+  }
+  .training-row .training-unit {
+    font-size: 13px;
+    color: var(--ink-muted);
+  }
+  .training-row button {
+    margin-left: auto;
+  }
+
+  .rating-row {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  .rating-row button {
+    flex: 1;
+    min-width: 36px;
+    padding: 8px 4px;
+    font-size: 15px;
+  }
+  .rating-row button.flash-rate {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  .multi-choice-row {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  .multi-choice-row button {
+    flex: 1;
+    min-width: 64px;
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+  .multi-choice-row button.flash-rate {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  .dual-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .dual-row input {
+    flex: 1;
+    min-width: 70px;
+    text-align: center;
+    padding: 10px 6px;
+  }
+  .dual-row .dual-label {
+    font-size: 13px;
+    color: var(--ink-muted);
+    white-space: nowrap;
+  }
+  .dual-row button {
+    margin-left: auto;
+  }
+
+  .range-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .range-row input {
+    flex: 1;
+    text-align: center;
+    padding: 10px 6px;
+  }
+  .range-row .range-sep {
+    font-size: 14px;
+    color: var(--ink-muted);
+  }
+  .range-row button {
+    margin-left: auto;
+  }
+
+  .startend-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .startend-row input[type="time"] {
+    flex: 1;
+    min-width: 110px;
+    padding: 10px 8px;
+  }
+  .startend-row .startend-sep {
+    font-size: 13px;
+    color: var(--ink-muted);
+  }
+  .startend-row button {
+    margin-left: auto;
+  }
+
+  .note-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .note-row textarea {
+    width: 100%;
+    min-height: 60px;
+  }
+  .note-row button {
+    align-self: flex-end;
+  }
+
+  .activity-time-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--ink-muted);
+  }
+  .activity-time-row input[type="time"] {
+    width: 110px;
+    padding: 5px 8px;
+    font-size: 12px;
+    margin: 0;
+  }
+  .activity-time-row button {
+    padding: 4px 10px;
+    font-size: 11px;
+  }
+
+  .routine-history {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--ink-muted);
+    min-height: 14px;
+    line-height: 1.6;
+  }
+  .routine-history-prefix {
+    color: var(--ink-muted);
+    opacity: 0.6;
+    margin-right: 4px;
+  }
+  .routine-history-entry {
+    display: inline-block;
+    margin-right: 8px;
+  }
+  .routine-history-time {
+    opacity: 0.55;
+    font-size: 11px;
+    margin-left: 2px;
+  }
+  .routine-history-empty {
+    font-style: italic;
+    opacity: 0.5;
+  }
+
+  /* 食事履歴 */
+  .meal-history {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+  .meal-history-item {
+    font-size: 13px;
+    color: var(--ink-muted);
+    padding: 4px 0;
+  }
+  .meal-history-empty {
+    font-size: 13px;
+    color: var(--ink-muted);
+    font-style: italic;
+  }
+
+  /* ステータス */
+  .status-message {
+    padding: 10px 12px;
+    border-radius: var(--radius);
+    margin-bottom: 12px;
+    font-size: 13px;
+    display: none;
+    position: sticky;
+    top: 8px;
+    z-index: 5;
+  }
+  .status-message.show { display: block; }
+  .status-message.success {
+    background: #E8F2E6;
+    color: var(--success);
+    border: 1px solid #C5DCC0;
+  }
+  .status-message.error {
+    background: #F7E5E3;
+    color: var(--danger);
+    border: 1px solid #E5BFBA;
+  }
+
+  .button-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .button-row button { flex: 1; }
+
+  .settings-link {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 13px;
+  }
+  .settings-link a {
+    color: var(--ink-muted);
+    text-decoration: underline;
+  }
+
+  /* セットアップ画面 */
+  .setup-screen {
+    max-width: 480px;
+    margin: 60px auto;
+    padding: 24px;
+  }
+  .setup-screen h1 { margin-bottom: 16px; }
+  .setup-screen p {
+    color: var(--ink-muted);
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+  .setup-screen .field { margin-bottom: 16px; }
+
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(31, 27, 22, 0.4);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    padding: 16px;
+  }
+  .modal-backdrop.show { display: flex; }
+  .modal {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 24px;
+    max-width: 480px;
+    width: 100%;
+  }
+  .modal h2 {
+    font-family: 'Noto Serif JP', serif;
+    margin-top: 0;
+    font-size: 18px;
+  }
+
+  @media (max-width: 480px) {
+    .container { padding: 16px 12px 60px; }
+    .card { padding: 16px; }
+    h1 { font-size: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- セットアップ画面 -->
+<div id="setup" class="setup-screen" style="display:none">
+  <h1>セットアップ</h1>
+  <p>初回起動です。Apps Script のウェブアプリ URL を入力してください。
+    （setup_guide.md に記載の手順でデプロイ後に取得できます）</p>
+  <div class="field">
+    <label class="field-label" for="setup-url">Apps Script URL</label>
+    <input type="url" id="setup-url" placeholder="https://script.google.com/macros/s/.../exec">
+  </div>
+  <button class="primary" onclick="saveSetup()">保存して開始</button>
+</div>
+
+<!-- メイン画面 -->
+<div id="main" class="container" style="display:none">
+
+  <header>
+    <h1>Daily Tracker</h1>
+    <div class="subtitle">起床・食事・ルーティン記録</div>
+  </header>
+
+  <div class="date-bar">
+    <label for="date">記録日:</label>
+    <input type="date" id="date">
+  </div>
+
+  <div id="status" class="status-message"></div>
+
+  <!-- ルーティンカード（最上部 - 入力頻度が高いため） -->
+  <section class="card">
+    <h2>ルーティン</h2>
+    <div class="routine-hint">各項目は独立して即時記録されます。1日に複数回の記録も可能です。</div>
+    <div id="routine-list">
+      <div class="meal-history-empty">読み込み中...</div>
+    </div>
+  </section>
+
+  <!-- 食事カード -->
+  <section class="card">
+    <h2>食事</h2>
+    <div class="field">
+      <label class="field-label">区分</label>
+      <div class="meal-type-group">
+        <label><input type="radio" name="meal-type" value="朝" checked><span>朝</span></label>
+        <label><input type="radio" name="meal-type" value="昼"><span>昼</span></label>
+        <label><input type="radio" name="meal-type" value="夕"><span>夕</span></label>
+        <label><input type="radio" name="meal-type" value="間食"><span>間食</span></label>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">開始時刻</label>
+      <div class="field-row">
+        <input type="time" id="meal-time">
+        <button onclick="setNow('meal-time')">今すぐ</button>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">終了時刻</label>
+      <div class="field-row">
+        <input type="time" id="meal-end-time">
+        <button onclick="setNow('meal-end-time')">今すぐ</button>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">メニュー</label>
+      <textarea id="meal-menu" rows="3" placeholder="例: ご飯、味噌汁、納豆、焼き鮭"></textarea>
+    </div>
+    <button class="primary" onclick="submitMeal()" id="meal-submit">食事を追加</button>
+
+    <div class="meal-history" id="meal-history">
+      <div class="meal-history-empty">今日の記録はまだありません</div>
+    </div>
+  </section>
+
+  <!-- 睡眠カード -->
+  <section class="card">
+    <h2>睡眠</h2>
+    <div class="routine-hint">1日複数回の記録に対応（仮眠なども別記録として追加できます）</div>
+    <div class="field">
+      <label class="field-label">入眠時刻（昨夜）</label>
+      <div class="field-row">
+        <input type="time" id="sleep-time">
+        <button onclick="setNow('sleep-time')">今すぐ</button>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">起床時刻</label>
+      <div class="field-row">
+        <input type="time" id="wake-time">
+        <button onclick="setNow('wake-time')">今すぐ</button>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">メモ</label>
+      <textarea id="sleep-note" rows="2" placeholder="任意（例: 仮眠、夢を見た等）"></textarea>
+    </div>
+    <button class="primary" onclick="submitSleep()" id="sleep-submit">睡眠を記録</button>
+
+    <div class="meal-history" id="sleep-history">
+      <div class="meal-history-empty">今日の記録はまだありません</div>
+    </div>
+  </section>
+
+  <!-- 天気カード -->
+  <section class="card">
+    <h2>天気</h2>
+    <div class="field">
+      <label class="field-label">場所</label>
+      <input type="text" id="weather-location" placeholder="例: 東京">
+    </div>
+    <div class="field">
+      <label class="field-label">気温（°C）</label>
+      <div class="dual-row">
+        <span class="dual-label">最高:</span>
+        <input type="number" step="0.1" inputmode="decimal" id="weather-max-temp" placeholder="最高">
+        <span class="dual-label">最低:</span>
+        <input type="number" step="0.1" inputmode="decimal" id="weather-min-temp" placeholder="最低">
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">午前の天気</label>
+      <div class="weather-type-group">
+        <label><input type="radio" name="morning-weather" value=""><span>未指定</span></label>
+        <label><input type="radio" name="morning-weather" value="晴"><span>晴</span></label>
+        <label><input type="radio" name="morning-weather" value="曇"><span>曇</span></label>
+        <label><input type="radio" name="morning-weather" value="雨"><span>雨</span></label>
+        <label><input type="radio" name="morning-weather" value="雪"><span>雪</span></label>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">午後の天気</label>
+      <div class="weather-type-group">
+        <label><input type="radio" name="afternoon-weather" value=""><span>未指定</span></label>
+        <label><input type="radio" name="afternoon-weather" value="晴"><span>晴</span></label>
+        <label><input type="radio" name="afternoon-weather" value="曇"><span>曇</span></label>
+        <label><input type="radio" name="afternoon-weather" value="雨"><span>雨</span></label>
+        <label><input type="radio" name="afternoon-weather" value="雪"><span>雪</span></label>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">湿度（%）</label>
+      <input type="number" step="1" min="0" max="100" inputmode="numeric" id="weather-humidity" placeholder="任意">
+    </div>
+    <div class="field">
+      <label class="field-label">気圧（hPa）</label>
+      <input type="number" step="0.1" inputmode="decimal" id="weather-pressure" placeholder="任意">
+    </div>
+    <div class="field">
+      <label class="field-label">メモ</label>
+      <textarea id="weather-note" rows="2" placeholder="任意"></textarea>
+    </div>
+    <button class="primary" onclick="submitWeather()" id="weather-submit">天気を記録</button>
+  </section>
+
+  <div class="settings-link">
+    <a href="#" onclick="openSettings(event)">設定</a>
+  </div>
+</div>
+
+<!-- 設定モーダル -->
+<div id="settings-modal" class="modal-backdrop" onclick="if(event.target===this) closeSettings()">
+  <div class="modal">
+    <h2>設定</h2>
+    <div class="field">
+      <label class="field-label" for="settings-url">Apps Script URL</label>
+      <input type="url" id="settings-url">
+    </div>
+    <div class="button-row">
+      <button onclick="closeSettings()">キャンセル</button>
+      <button class="primary" onclick="saveSettings()">保存</button>
+    </div>
+    <div style="margin-top: 16px; font-size: 12px; color: var(--ink-muted);">
+      バージョン 1.6
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+const STORAGE_KEY = 'tracker_apps_script_url';
+let scriptUrl = '';
+let routineItems = [];
+let routineHistory = {}; // item_id -> [{value, timestamp, note}, ...]
+
+// あ〜ん 46文字（基本ひらがな表）
+const HIRAGANA_SEQUENCE = [
+  'あ','い','う','え','お',
+  'か','き','く','け','こ',
+  'さ','し','す','せ','そ',
+  'た','ち','つ','て','と',
+  'な','に','ぬ','ね','の',
+  'は','ひ','ふ','へ','ほ',
+  'ま','み','む','め','も',
+  'や','ゆ','よ',
+  'ら','り','る','れ','ろ',
+  'わ','を','ん'
+];
+
+function hiraganaToPosition(char) {
+  const idx = HIRAGANA_SEQUENCE.indexOf(char);
+  return idx === -1 ? null : idx + 1; // 1-indexed
+}
+
+function positionToHiragana(num) {
+  const idx = parseInt(num) - 1;
+  if (idx < 0 || idx >= HIRAGANA_SEQUENCE.length) return null;
+  return HIRAGANA_SEQUENCE[idx];
+}
+
+// ============================================================
+// 初期化
+// ============================================================
+
+window.addEventListener('load', () => {
+  scriptUrl = localStorage.getItem(STORAGE_KEY) || '';
+  if (!scriptUrl) {
+    document.getElementById('setup').style.display = 'block';
+    return;
+  }
+  document.getElementById('main').style.display = 'block';
+  initializeApp();
+});
+
+function initializeApp() {
+  const today = formatDate(new Date());
+  document.getElementById('date').value = today;
+  document.getElementById('date').addEventListener('change', loadData);
+  document.getElementById('meal-time').value = formatTime(new Date());
+  loadData();
+}
+
+function saveSetup() {
+  const url = document.getElementById('setup-url').value.trim();
+  if (!url) { alert('URL を入力してください'); return; }
+  localStorage.setItem(STORAGE_KEY, url);
+  scriptUrl = url;
+  document.getElementById('setup').style.display = 'none';
+  document.getElementById('main').style.display = 'block';
+  initializeApp();
+}
+
+// ============================================================
+// 設定モーダル
+// ============================================================
+
+function openSettings(e) {
+  if (e) e.preventDefault();
+  document.getElementById('settings-url').value = scriptUrl;
+  document.getElementById('settings-modal').classList.add('show');
+}
+
+function closeSettings() {
+  document.getElementById('settings-modal').classList.remove('show');
+}
+
+function saveSettings() {
+  const url = document.getElementById('settings-url').value.trim();
+  if (!url) return;
+  localStorage.setItem(STORAGE_KEY, url);
+  scriptUrl = url;
+  closeSettings();
+  loadData();
+}
+
+// ============================================================
+// データ読み込み
+// ============================================================
+
+async function loadData() {
+  await Promise.all([loadRoutineItems(), loadDailyData()]);
+}
+
+async function loadRoutineItems() {
+  const date = document.getElementById('date').value;
+  try {
+    const res = await fetch(scriptUrl + '?action=items&date=' + date);
+    const data = await res.json();
+    routineItems = data.items || [];
+    renderRoutineItems();
+  } catch (err) {
+    document.getElementById('routine-list').innerHTML =
+      '<div class="meal-history-empty">読み込みに失敗しました</div>';
+  }
+}
+
+async function loadDailyData() {
+  const date = document.getElementById('date').value;
+  try {
+    const res = await fetch(scriptUrl + '?action=daily&date=' + date);
+    const data = await res.json();
+
+    // 睡眠: 配列で受け取って履歴表示
+    renderSleepHistory(Array.isArray(data.sleep) ? data.sleep : []);
+
+    renderMealHistory(data.meals || []);
+
+    routineHistory = data.routines || {};
+    Object.keys(routineHistory).forEach(itemId => updateRoutineHistory(itemId));
+
+    // 天気の読み込み
+    if (data.weather) {
+      const w = data.weather;
+      if (w.location !== undefined) document.getElementById('weather-location').value = w.location;
+      if (w.max_temp !== '' && w.max_temp !== undefined) document.getElementById('weather-max-temp').value = w.max_temp;
+      if (w.min_temp !== '' && w.min_temp !== undefined) document.getElementById('weather-min-temp').value = w.min_temp;
+      if (w.humidity !== '' && w.humidity !== undefined) document.getElementById('weather-humidity').value = w.humidity;
+      if (w.pressure !== '' && w.pressure !== undefined) document.getElementById('weather-pressure').value = w.pressure;
+      if (w.note !== undefined) document.getElementById('weather-note').value = w.note;
+      
+      if (w.morning_weather) {
+        const radio = document.querySelector('input[name="morning-weather"][value="' + w.morning_weather + '"]');
+        if (radio) radio.checked = true;
+      }
+      if (w.afternoon_weather) {
+        const radio = document.querySelector('input[name="afternoon-weather"][value="' + w.afternoon_weather + '"]');
+        if (radio) radio.checked = true;
+      }
+    }
+  } catch (err) {
+    // 静かに失敗
+  }
+}
+
+function renderSleepHistory(records) {
+  const el = document.getElementById('sleep-history');
+  if (records.length === 0) {
+    el.innerHTML = '<div class="meal-history-empty">今日の記録はまだありません</div>';
+    return;
+  }
+  
+  let totalMin = 0;
+  const items = records.map(r => {
+    const sleep = r.sleep_time ? formatTimeValue(r.sleep_time) : '';
+    const wake = r.wake_time ? formatTimeValue(r.wake_time) : '';
+    const note = r.note ? ' — ' + r.note : '';
+    let display = '';
+    if (sleep && wake) {
+      const duration = computeDurationMinutes(sleep, wake);
+      totalMin += duration;
+      const h = Math.floor(duration / 60);
+      const m = duration % 60;
+      display = '入眠 ' + sleep + ' → 起床 ' + wake + ' (' + h + '時間' + m + '分)';
+    } else if (sleep) {
+      display = '入眠 ' + sleep;
+    } else if (wake) {
+      display = '起床 ' + wake;
+    }
+    return '<div class="meal-history-item">' + escapeHtml(display) + escapeHtml(note) + '</div>';
+  });
+  
+  let totalLine = '';
+  if (totalMin > 0) {
+    const totalH = Math.floor(totalMin / 60);
+    const totalM = totalMin % 60;
+    totalLine = '<div class="meal-history-item" style="margin-top: 4px; padding-top: 6px; border-top: 1px dashed var(--border); font-weight: 500; color: var(--ink);">合計: ' + totalH + '時間' + totalM + '分</div>';
+  }
+  
+  el.innerHTML = items.join('') + totalLine;
+}
+
+function formatTimeValue(val) {
+  if (!val) return '';
+  if (typeof val === 'string' && /^\d{2}:\d{2}/.test(val)) {
+    return val.substring(0, 5);
+  }
+  try { return formatTime(new Date(val)); } catch (e) { return ''; }
+}
+
+// ============================================================
+// ルーティンUI生成
+// ============================================================
+
+function renderRoutineItems() {
+  const list = document.getElementById('routine-list');
+  if (routineItems.length === 0) {
+    list.innerHTML = '<div class="meal-history-empty">今日有効な項目がありません</div>';
+    return;
+  }
+  list.innerHTML = routineItems.map(item => renderRoutineItem(item)).join('');
+  routineItems.forEach(item => updateRoutineHistory(item.item_id));
+}
+
+function renderRoutineItem(item) {
+  const unitText = item.unit ? '（' + escapeHtml(item.unit) + '）' : '';
+  // multi_choice / dual_value / rating で unit/notes を設定として使うので、表示はタイプ別に判断
+  const showUnit = !['multi_choice', 'dual_value', 'rating'].includes(item.type);
+  const headerName = item.name + (showUnit ? unitText : '');
+  let inputHtml = '';
+
+  if (item.type === 'binary') {
+    inputHtml = `
+      <div class="binary-toggle">
+        <button onclick="recordBinary('${item.item_id}', '◯', this)">◯ できた</button>
+        <button onclick="recordBinary('${item.item_id}', '×', this)">× できなかった</button>
+      </div>
+    `;
+  } else if (item.type === 'time_ms') {
+    inputHtml = `
+      <div class="time-row">
+        <input type="number" min="0" inputmode="numeric" id="input-${item.item_id}-min" placeholder="分">
+        <span class="time-unit">分</span>
+        <input type="number" min="0" max="59" inputmode="numeric" id="input-${item.item_id}-sec" placeholder="秒">
+        <span class="time-unit">秒</span>
+        <button onclick="recordTimeMS('${item.item_id}', this)">記録</button>
+      </div>
+    `;
+  } else if (item.type === 'time_hm') {
+    inputHtml = `
+      <div class="time-row">
+        <input type="number" min="0" inputmode="numeric" id="input-${item.item_id}-hr" placeholder="時">
+        <span class="time-unit">時間</span>
+        <input type="number" min="0" max="59" inputmode="numeric" id="input-${item.item_id}-min" placeholder="分">
+        <span class="time-unit">分</span>
+        <button onclick="recordTimeHM('${item.item_id}', this)">記録</button>
+      </div>
+    `;
+  } else if (item.type === 'hiragana_pos') {
+    inputHtml = `
+      <div class="hiragana-row">
+        <input type="text" maxlength="1" id="input-${item.item_id}" placeholder="あ〜ん">
+        <span class="hiragana-hint">1文字</span>
+        <button onclick="recordHiragana('${item.item_id}', this)">記録</button>
+      </div>
+    `;
+  } else if (item.type === 'fraction') {
+    inputHtml = `
+      <div class="fraction-row">
+        <input type="number" step="1" min="0" inputmode="numeric" id="input-${item.item_id}-correct" placeholder="正解">
+        <span class="fraction-divider">/</span>
+        <input type="number" step="1" min="1" inputmode="numeric" id="input-${item.item_id}-total" placeholder="問題数">
+        <button onclick="recordFraction('${item.item_id}', this)">記録</button>
+      </div>
+    `;
+  } else if (item.type === 'training') {
+    inputHtml = `
+      <div class="training-fields">
+        <input type="text" class="training-menu" id="input-${item.item_id}-menu" placeholder="メニュー名（例: ベンチプレス）">
+        <div class="training-row">
+          <input type="number" step="0.5" min="0" inputmode="decimal" id="input-${item.item_id}-weight" placeholder="重さ">
+          <span class="training-unit">kg</span>
+          <input type="number" step="1" min="0" inputmode="numeric" id="input-${item.item_id}-reps" placeholder="回数">
+          <span class="training-unit">回</span>
+          <button onclick="recordTraining('${item.item_id}', this)">記録</button>
+        </div>
+      </div>
+    `;
+  } else if (item.type === 'count') {
+    const placeholder = item.unit ? escapeHtml(item.unit) + 'を入力' : '個数を入力';
+    inputHtml = `
+      <div class="numeric-row">
+        <input type="number" step="1" min="0" inputmode="numeric"
+               id="input-${item.item_id}"
+               placeholder="${placeholder}">
+        <button onclick="recordNumeric('${item.item_id}', this)">記録</button>
+      </div>
+    `;
+  } else if (item.type === 'rating') {
+    // unitに最大値を指定（デフォルト5）
+    const maxRating = parseInt(item.unit) || 5;
+    const safeMax = Math.min(Math.max(maxRating, 2), 10);
+    let buttons = '';
+    for (let i = 1; i <= safeMax; i++) {
+      buttons += `<button onclick="recordRating('${item.item_id}', ${i}, this)">${i}</button>`;
+    }
+    inputHtml = `<div class="rating-row">${buttons}</div>`;
+  } else if (item.type === 'multi_choice') {
+    // notes に "選択肢A,選択肢B,選択肢C" 形式で記入
+    const choices = (item.notes || '').split(',').map(c => c.trim()).filter(c => c);
+    if (choices.length === 0) {
+      inputHtml = `<div class="meal-history-empty">notes列に選択肢をカンマ区切りで設定してください</div>`;
+    } else {
+      let buttons = '';
+      choices.forEach(c => {
+        const safe = escapeHtml(c);
+        const safeJs = c.replace(/'/g, "\\'");
+        buttons += `<button onclick="recordMultiChoice('${item.item_id}', '${safeJs}', this)">${safe}</button>`;
+      });
+      inputHtml = `<div class="multi-choice-row">${buttons}</div>`;
+    }
+  } else if (item.type === 'dual_value') {
+    // notes に "ラベル1,ラベル2" 形式（例: "最高,最低"）
+    const labels = (item.notes || ',').split(',').map(l => l.trim());
+    const label1 = labels[0] || '値1';
+    const label2 = labels[1] || '値2';
+    inputHtml = `
+      <div class="dual-row">
+        <span class="dual-label">${escapeHtml(label1)}:</span>
+        <input type="number" step="0.01" inputmode="decimal" id="input-${item.item_id}-v1" placeholder="${escapeHtml(label1)}">
+        <span class="dual-label">${escapeHtml(label2)}:</span>
+        <input type="number" step="0.01" inputmode="decimal" id="input-${item.item_id}-v2" placeholder="${escapeHtml(label2)}">
+        <button onclick="recordDualValue('${item.item_id}', this)">記録</button>
+      </div>
+    `;
+  } else if (item.type === 'range') {
+    const placeholder = item.unit ? escapeHtml(item.unit) : '';
+    inputHtml = `
+      <div class="range-row">
+        <input type="number" step="0.01" inputmode="decimal" id="input-${item.item_id}-min" placeholder="最小${placeholder ? '(' + placeholder + ')' : ''}">
+        <span class="range-sep">〜</span>
+        <input type="number" step="0.01" inputmode="decimal" id="input-${item.item_id}-max" placeholder="最大${placeholder ? '(' + placeholder + ')' : ''}">
+        <button onclick="recordRange('${item.item_id}', this)">記録</button>
+      </div>
+    `;
+  } else if (item.type === 'start_end_time') {
+    inputHtml = `
+      <div class="startend-row">
+        <input type="time" id="input-${item.item_id}-start">
+        <span class="startend-sep">〜</span>
+        <input type="time" id="input-${item.item_id}-end">
+        <button onclick="recordStartEndTime('${item.item_id}', this)">記録</button>
+      </div>
+    `;
+  } else if (item.type === 'note_only') {
+    inputHtml = `
+      <div class="note-row">
+        <textarea id="input-${item.item_id}" rows="2" placeholder="メモを入力"></textarea>
+        <button onclick="recordNoteOnly('${item.item_id}', this)">記録</button>
+      </div>
+    `;
+  } else {
+    // numeric / timed - 小数も含む数値入力
+    const placeholder = item.unit ? escapeHtml(item.unit) + ' を入力' : '値を入力';
+    inputHtml = `
+      <div class="numeric-row">
+        <input type="number" step="0.01" inputmode="decimal"
+               id="input-${item.item_id}"
+               placeholder="${placeholder}">
+        <button onclick="recordNumeric('${item.item_id}', this)">記録</button>
+      </div>
+    `;
+  }
+
+  // 取り組み時刻フィールド（空欄なら送信時刻を使用）
+  const activityTimeHtml = `
+    <div class="activity-time-row">
+      <span>取り組み時刻:</span>
+      <input type="time" id="time-${item.item_id}" placeholder="HH:MM">
+      <button class="ghost" onclick="setActivityTimeNow('${item.item_id}')">今</button>
+      <button class="ghost" onclick="clearActivityTime('${item.item_id}')">クリア</button>
+    </div>
+  `;
+
+  return `
+    <div class="routine-item">
+      <div class="routine-item-header">
+        <div class="routine-item-name">${escapeHtml(headerName)}</div>
+        <div class="routine-item-meta">${escapeHtml(item.type)}</div>
+      </div>
+      ${inputHtml}
+      ${activityTimeHtml}
+      <div class="routine-history" id="history-${item.item_id}"></div>
+    </div>
+  `;
+}
+
+function updateRoutineHistory(itemId) {
+  const el = document.getElementById('history-' + itemId);
+  if (!el) return;
+  const entries = routineHistory[itemId] || [];
+  if (entries.length === 0) {
+    el.innerHTML = '<span class="routine-history-empty">今日の記録なし</span>';
+    return;
+  }
+  const item = routineItems.find(i => i.item_id === itemId);
+  const itemType = item ? item.type : '';
+  
+  const parts = entries.map(e => {
+    // activity_time があればそれを優先表示、なければ timestamp から
+    const time = e.activity_time
+      ? String(e.activity_time).substring(0, 5)
+      : (e.timestamp ? formatTimeFromTimestamp(e.timestamp) : '');
+    const display = formatRoutineValue(e.value, itemType);
+    return `<span class="routine-history-entry">${escapeHtml(display)}<span class="routine-history-time">${time ? '(' + time + ')' : ''}</span></span>`;
+  });
+  const countLabel = entries.length > 1 ? `今日 ${entries.length}回:` : '今日:';
+  el.innerHTML = `<span class="routine-history-prefix">${countLabel}</span>` + parts.join('');
+}
+
+function formatRoutineValue(value, type) {
+  if (type === 'time_ms') {
+    const sec = parseInt(value);
+    if (isNaN(sec)) return String(value);
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return m + ':' + String(s).padStart(2, '0');
+  }
+  if (type === 'time_hm') {
+    const min = parseInt(value);
+    if (isNaN(min)) return String(value);
+    const h = Math.floor(min / 60);
+    const m = min % 60;
+    return h + ':' + String(m).padStart(2, '0');
+  }
+  if (type === 'hiragana_pos') {
+    const pos = parseInt(value);
+    if (isNaN(pos)) return String(value);
+    const char = positionToHiragana(pos);
+    return char ? char + '(' + pos + ')' : String(value);
+  }
+  if (type === 'training') {
+    const parts = String(value).split('|');
+    const menu = parts[0] || '';
+    const weight = parts[1] || '';
+    const reps = parts[2] || '';
+    let display = menu;
+    if (weight) display += ' ' + weight + 'kg';
+    if (reps) display += (weight ? ' × ' : ' ') + reps + '回';
+    return display || String(value);
+  }
+  if (type === 'start_end_time') {
+    // "09:00|09:30" → "09:00-09:30 (30分)"
+    const parts = String(value).split('|');
+    if (parts.length !== 2) return String(value);
+    const start = parts[0];
+    const end = parts[1];
+    const duration = computeDurationMinutes(start, end);
+    return start + '-' + end + (duration > 0 ? ' (' + duration + '分)' : '');
+  }
+  return String(value);
+}
+
+function computeDurationMinutes(startStr, endStr) {
+  // "HH:MM" 形式から差分(分)を返す。終了が開始より前なら翌日扱い
+  const parseHM = s => {
+    const m = String(s).match(/^(\d{1,2}):(\d{2})/);
+    return m ? parseInt(m[1]) * 60 + parseInt(m[2]) : null;
+  };
+  const a = parseHM(startStr);
+  const b = parseHM(endStr);
+  if (a === null || b === null) return 0;
+  let diff = b - a;
+  if (diff < 0) diff += 24 * 60;
+  return diff;
+}
+
+function formatTimeFromTimestamp(ts) {
+  try {
+    const d = new Date(ts);
+    if (isNaN(d.getTime())) return '';
+    return formatTime(d);
+  } catch (e) { return ''; }
+}
+
+// ============================================================
+// ルーティン記録（即時送信）
+// ============================================================
+
+async function recordBinary(itemId, value, btn) {
+  const parent = btn.parentElement;
+  const buttons = parent.querySelectorAll('button');
+  buttons.forEach(b => b.disabled = true);
+
+  const flashClass = value === '◯' ? 'flash-ok' : 'flash-ng';
+  btn.classList.add(flashClass);
+
+  try {
+    await sendRoutineRecord(itemId, value);
+    showStatus('記録しました', 'success');
+  } catch (err) {
+    showStatus('送信失敗: ' + err.message, 'error');
+  } finally {
+    buttons.forEach(b => b.disabled = false);
+    setTimeout(() => btn.classList.remove(flashClass), 500);
+  }
+}
+
+async function recordNumeric(itemId, btn) {
+  const inputEl = document.getElementById('input-' + itemId);
+  const value = inputEl.value.trim();
+  if (value === '') {
+    showStatus('値を入力してください', 'error');
+    return;
+  }
+
+  btn.disabled = true;
+  inputEl.disabled = true;
+
+  try {
+    await sendRoutineRecord(itemId, value);
+    inputEl.value = '';
+    showStatus('記録しました', 'success');
+  } catch (err) {
+    showStatus('送信失敗: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    inputEl.disabled = false;
+  }
+}
+
+async function recordTimeMS(itemId, btn) {
+  const minEl = document.getElementById('input-' + itemId + '-min');
+  const secEl = document.getElementById('input-' + itemId + '-sec');
+  
+  if (minEl.value === '' && secEl.value === '') {
+    showStatus('時間を入力してください', 'error');
+    return;
+  }
+  
+  const min = parseInt(minEl.value) || 0;
+  const sec = parseInt(secEl.value) || 0;
+  const totalSec = min * 60 + sec;
+  
+  if (totalSec <= 0) {
+    showStatus('0より大きい時間を入力してください', 'error');
+    return;
+  }
+  
+  btn.disabled = true;
+  minEl.disabled = true;
+  secEl.disabled = true;
+  
+  try {
+    await sendRoutineRecord(itemId, totalSec);
+    minEl.value = '';
+    secEl.value = '';
+    showStatus('記録しました', 'success');
+  } catch (err) {
+    showStatus('送信失敗: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    minEl.disabled = false;
+    secEl.disabled = false;
+  }
+}
+
+async function recordTimeHM(itemId, btn) {
+  const hrEl = document.getElementById('input-' + itemId + '-hr');
+  const minEl = document.getElementById('input-' + itemId + '-min');
+  
+  if (hrEl.value === '' && minEl.value === '') {
+    showStatus('時間を入力してください', 'error');
+    return;
+  }
+  
+  const hr = parseInt(hrEl.value) || 0;
+  const min = parseInt(minEl.value) || 0;
+  const totalMin = hr * 60 + min;
+  
+  if (totalMin <= 0) {
+    showStatus('0より大きい時間を入力してください', 'error');
+    return;
+  }
+  
+  btn.disabled = true;
+  hrEl.disabled = true;
+  minEl.disabled = true;
+  
+  try {
+    await sendRoutineRecord(itemId, totalMin);
+    hrEl.value = '';
+    minEl.value = '';
+    showStatus('記録しました', 'success');
+  } catch (err) {
+    showStatus('送信失敗: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    hrEl.disabled = false;
+    minEl.disabled = false;
+  }
+}
+
+async function recordHiragana(itemId, btn) {
+  const inputEl = document.getElementById('input-' + itemId);
+  const char = inputEl.value.trim();
+  
+  if (!char) {
+    showStatus('ひらがなを1文字入力してください', 'error');
+    return;
+  }
+  const position = hiraganaToPosition(char);
+  if (position === null) {
+    showStatus('「' + char + '」は認識できません。あ〜んの基本ひらがな1文字を入力してください', 'error');
+    return;
+  }
+  
+  btn.disabled = true;
+  inputEl.disabled = true;
+  
+  try {
+    await sendRoutineRecord(itemId, position);
+    inputEl.value = '';
+    showStatus('「' + char + '」(' + position + ') を記録しました', 'success');
+  } catch (err) {
+    showStatus('送信失敗: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    inputEl.disabled = false;
+  }
+}
+
+async function recordFraction(itemId, btn) {
+  const correctEl = document.getElementById('input-' + itemId + '-correct');
+  const totalEl = document.getElementById('input-' + itemId + '-total');
+  
+  if (correctEl.value === '' || totalEl.value === '') {
+    showStatus('正解数と問題数の両方を入力してください', 'error');
+    return;
+  }
+  
+  const correct = parseInt(correctEl.value);
+  const total = parseInt(totalEl.value);
+  
+  if (isNaN(correct) || isNaN(total) || total <= 0) {
+    showStatus('正しい数値を入力してください', 'error');
+    return;
+  }
+  if (correct > total) {
+    showStatus('正解数が問題数を超えています', 'error');
+    return;
+  }
+  
+  const value = correct + '/' + total;
+  
+  btn.disabled = true;
+  correctEl.disabled = true;
+  totalEl.disabled = true;
+  
+  try {
+    await sendRoutineRecord(itemId, value);
+    correctEl.value = '';
+    totalEl.value = '';
+    showStatus('記録しました', 'success');
+  } catch (err) {
+    showStatus('送信失敗: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    correctEl.disabled = false;
+    totalEl.disabled = false;
+  }
+}
+
+async function recordTraining(itemId, btn) {
+  const menuEl = document.getElementById('input-' + itemId + '-menu');
+  const weightEl = document.getElementById('input-' + itemId + '-weight');
+  const repsEl = document.getElementById('input-' + itemId + '-reps');
+  
+  const menu = menuEl.value.trim();
+  const weight = weightEl.value.trim();
+  const reps = repsEl.value.trim();
+  
+  if (!menu) {
+    showStatus('メニュー名を入力してください', 'error');
+    return;
+  }
+  if (menu.indexOf('|') !== -1) {
+    showStatus('メニュー名に「|」は使えません', 'error');
+    return;
+  }
+  if (!weight && !reps) {
+    showStatus('重さか回数のどちらかは入力してください', 'error');
+    return;
+  }
+  
+  // "メニュー|重さ|回数" 形式で保存
+  const value = menu + '|' + weight + '|' + reps;
+  
+  btn.disabled = true;
+  menuEl.disabled = true;
+  weightEl.disabled = true;
+  repsEl.disabled = true;
+  
+  try {
+    await sendRoutineRecord(itemId, value);
+    // メニュー名は次のセットでも同じ可能性が高いので残す
+    weightEl.value = '';
+    repsEl.value = '';
+    showStatus('記録しました', 'success');
+  } catch (err) {
+    showStatus('送信失敗: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    menuEl.disabled = false;
+    weightEl.disabled = false;
+    repsEl.disabled = false;
+  }
+}
+
+async function sendRoutineRecord(itemId, value) {
+  const date = document.getElementById('date').value;
+  const activityTime = getActivityTime(itemId);
+  const payload = {
+    type: 'routine',
+    date: date,
+    items: [{ item_id: itemId, value: String(value), activity_time: activityTime }],
+  };
+  await postData(payload);
+
+  // ローカル履歴に追加（再fetchなしで即時反映）
+  if (!routineHistory[itemId]) routineHistory[itemId] = [];
+  routineHistory[itemId].push({
+    value: value,
+    timestamp: new Date().toISOString(),
+    activity_time: activityTime,
+  });
+  updateRoutineHistory(itemId);
+  
+  // 送信成功後、取り組み時刻フィールドをクリア（次回入力時のため）
+  clearActivityTime(itemId);
+}
+
+// 取り組み時刻ヘルパー
+function getActivityTime(itemId) {
+  const el = document.getElementById('time-' + itemId);
+  return el ? el.value : '';
+}
+
+function setActivityTimeNow(itemId) {
+  const el = document.getElementById('time-' + itemId);
+  if (el) el.value = formatTime(new Date());
+}
+
+function clearActivityTime(itemId) {
+  const el = document.getElementById('time-' + itemId);
+  if (el) el.value = '';
+}
+
+// 新タイプの記録関数
+
+async function recordRating(itemId, value, btn) {
+  const buttons = btn.parentElement.querySelectorAll('button');
+  buttons.forEach(b => b.disabled = true);
+  btn.classList.add('flash-rate');
+  try {
+    await sendRoutineRecord(itemId, value);
+    showStatus('記録しました', 'success');
+  } catch (err) {
+    showStatus('送信失敗: ' + err.message, 'error');
+  } finally {
+    buttons.forEach(b => b.disabled = false);
+    setTimeout(() => btn.classList.remove('flash-rate'), 500);
+  }
+}
+
+async function recordMultiChoice(itemId, value, btn) {
+  const buttons = btn.parentElement.querySelectorAll('button');
+  buttons.forEach(b => b.disabled = true);
+  btn.classList.add('flash-rate');
+  try {
+    await sendRoutineRecord(itemId, value);
+    showStatus('記録しました', 'success');
+  } catch (err) {
+    showStatus('送信失敗: ' + err.message, 'error');
+  } finally {
+    buttons.forEach(b => b.disabled = false);
+    setTimeout(() => btn.classList.remove('flash-rate'), 500);
+  }
+}
+
+async function recordDualValue(itemId, btn) {
+  const v1El = document.getElementById('input-' + itemId + '-v1');
+  const v2El = document.getElementById('input-' + itemId + '-v2');
+  
+  if (v1El.value === '' || v2El.value === '') {
+    showStatus('両方の値を入力してください', 'error');
+    return;
+  }
+  
+  const v1 = v1El.value.trim();
+  const v2 = v2El.value.trim();
+  const value = v1 + '/' + v2;
+  
+  btn.disabled = true;
+  v1El.disabled = true;
+  v2El.disabled = true;
+  
+  try {
+    await sendRoutineRecord(itemId, value);
+    v1El.value = '';
+    v2El.value = '';
+    showStatus('記録しました', 'success');
+  } catch (err) {
+    showStatus('送信失敗: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    v1El.disabled = false;
+    v2El.disabled = false;
+  }
+}
+
+async function recordRange(itemId, btn) {
+  const minEl = document.getElementById('input-' + itemId + '-min');
+  const maxEl = document.getElementById('input-' + itemId + '-max');
+  
+  if (minEl.value === '' || maxEl.value === '') {
+    showStatus('最小と最大の両方を入力してください', 'error');
+    return;
+  }
+  
+  const minV = parseFloat(minEl.value);
+  const maxV = parseFloat(maxEl.value);
+  if (isNaN(minV) || isNaN(maxV)) {
+    showStatus('正しい数値を入力してください', 'error');
+    return;
+  }
+  if (minV > maxV) {
+    showStatus('最小値が最大値より大きいです', 'error');
+    return;
+  }
+  
+  const value = minEl.value.trim() + '-' + maxEl.value.trim();
+  
+  btn.disabled = true;
+  minEl.disabled = true;
+  maxEl.disabled = true;
+  
+  try {
+    await sendRoutineRecord(itemId, value);
+    minEl.value = '';
+    maxEl.value = '';
+    showStatus('記録しました', 'success');
+  } catch (err) {
+    showStatus('送信失敗: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    minEl.disabled = false;
+    maxEl.disabled = false;
+  }
+}
+
+async function recordStartEndTime(itemId, btn) {
+  const startEl = document.getElementById('input-' + itemId + '-start');
+  const endEl = document.getElementById('input-' + itemId + '-end');
+  
+  if (startEl.value === '' || endEl.value === '') {
+    showStatus('開始時刻と終了時刻の両方を入力してください', 'error');
+    return;
+  }
+  
+  const value = startEl.value + '|' + endEl.value;
+  
+  btn.disabled = true;
+  startEl.disabled = true;
+  endEl.disabled = true;
+  
+  try {
+    await sendRoutineRecord(itemId, value);
+    startEl.value = '';
+    endEl.value = '';
+    showStatus('記録しました', 'success');
+  } catch (err) {
+    showStatus('送信失敗: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    startEl.disabled = false;
+    endEl.disabled = false;
+  }
+}
+
+async function recordNoteOnly(itemId, btn) {
+  const inputEl = document.getElementById('input-' + itemId);
+  const value = inputEl.value.trim();
+  if (value === '') {
+    showStatus('メモを入力してください', 'error');
+    return;
+  }
+  
+  btn.disabled = true;
+  inputEl.disabled = true;
+  
+  try {
+    await sendRoutineRecord(itemId, value);
+    inputEl.value = '';
+    showStatus('記録しました', 'success');
+  } catch (err) {
+    showStatus('送信失敗: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    inputEl.disabled = false;
+  }
+}
+
+// ============================================================
+// 食事
+// ============================================================
+
+function renderMealHistory(meals) {
+  const el = document.getElementById('meal-history');
+  if (meals.length === 0) {
+    el.innerHTML = '<div class="meal-history-empty">今日の記録はまだありません</div>';
+    return;
+  }
+  el.innerHTML = meals.map(m => {
+    const startTime = m.meal_time ? formatTimeValue(m.meal_time) : '';
+    const endTime = m.meal_end_time ? formatTimeValue(m.meal_end_time) : '';
+    let timeStr = '';
+    if (startTime && endTime) {
+      timeStr = ' ' + startTime + '-' + endTime;
+    } else if (startTime) {
+      timeStr = ' ' + startTime;
+    }
+    return `<div class="meal-history-item">
+      <strong>${escapeHtml(m.meal_type || '')}</strong>${escapeHtml(timeStr)}
+      ${m.menu ? ' — ' + escapeHtml(m.menu) : ''}
+    </div>`;
+  }).join('');
+}
+
+async function submitMeal() {
+  const btn = document.getElementById('meal-submit');
+  btn.disabled = true;
+  try {
+    const mealType = document.querySelector('input[name="meal-type"]:checked').value;
+    const menu = document.getElementById('meal-menu').value.trim();
+    if (!menu) {
+      showStatus('メニューを入力してください', 'error');
+      btn.disabled = false;
+      return;
+    }
+    const payload = {
+      type: 'meal',
+      date: document.getElementById('date').value,
+      meal_type: mealType,
+      meal_time: document.getElementById('meal-time').value,
+      meal_end_time: document.getElementById('meal-end-time').value,
+      menu: menu,
+    };
+    await postData(payload);
+    showStatus(mealType + 'を記録しました', 'success');
+    document.getElementById('meal-menu').value = '';
+    document.getElementById('meal-end-time').value = '';
+
+    const res = await fetch(scriptUrl + '?action=daily&date=' + document.getElementById('date').value);
+    const data = await res.json();
+    renderMealHistory(data.meals || []);
+  } catch (err) {
+    showStatus('送信失敗: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// ============================================================
+// 睡眠
+// ============================================================
+
+async function submitSleep() {
+  const btn = document.getElementById('sleep-submit');
+  const sleepTime = document.getElementById('sleep-time').value;
+  const wakeTime = document.getElementById('wake-time').value;
+  const note = document.getElementById('sleep-note').value;
+  
+  if (!sleepTime && !wakeTime && !note) {
+    showStatus('入眠時刻・起床時刻のいずれかを入力してください', 'error');
+    return;
+  }
+  
+  btn.disabled = true;
+  try {
+    const payload = {
+      type: 'sleep',
+      date: document.getElementById('date').value,
+      wake_time: wakeTime,
+      sleep_time: sleepTime,
+      note: note,
+    };
+    await postData(payload);
+    showStatus('睡眠を記録しました', 'success');
+    
+    // フォームクリア（次の記録のため）
+    document.getElementById('sleep-time').value = '';
+    document.getElementById('wake-time').value = '';
+    document.getElementById('sleep-note').value = '';
+    
+    // 履歴を再読み込み
+    const res = await fetch(scriptUrl + '?action=daily&date=' + document.getElementById('date').value);
+    const data = await res.json();
+    renderSleepHistory(Array.isArray(data.sleep) ? data.sleep : []);
+  } catch (err) {
+    showStatus('送信失敗: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function submitWeather() {
+  const btn = document.getElementById('weather-submit');
+  btn.disabled = true;
+  try {
+    const getRadio = name => {
+      const el = document.querySelector('input[name="' + name + '"]:checked');
+      return el ? el.value : '';
+    };
+    const payload = {
+      type: 'weather',
+      date: document.getElementById('date').value,
+      location: document.getElementById('weather-location').value,
+      max_temp: document.getElementById('weather-max-temp').value,
+      min_temp: document.getElementById('weather-min-temp').value,
+      morning_weather: getRadio('morning-weather'),
+      afternoon_weather: getRadio('afternoon-weather'),
+      humidity: document.getElementById('weather-humidity').value,
+      pressure: document.getElementById('weather-pressure').value,
+      note: document.getElementById('weather-note').value,
+    };
+    await postData(payload);
+    showStatus('天気を記録しました', 'success');
+  } catch (err) {
+    showStatus('送信失敗: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// ============================================================
+// 通信
+// ============================================================
+
+async function postData(payload) {
+  // Apps Script の CORS 制約により Content-Type ヘッダは明示しない
+  const res = await fetch(scriptUrl, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error);
+  return data;
+}
+
+// ============================================================
+// ユーティリティ
+// ============================================================
+
+function setNow(inputId) {
+  document.getElementById(inputId).value = formatTime(new Date());
+}
+
+function formatDate(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return y + '-' + m + '-' + day;
+}
+
+function formatTime(d) {
+  const h = String(d.getHours()).padStart(2, '0');
+  const m = String(d.getMinutes()).padStart(2, '0');
+  return h + ':' + m;
+}
+
+function showStatus(message, type) {
+  const el = document.getElementById('status');
+  el.textContent = message;
+  el.className = 'status-message show ' + type;
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+function escapeHtml(s) {
+  if (s == null) return '';
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+</script>
+
+</body>
+</html>
