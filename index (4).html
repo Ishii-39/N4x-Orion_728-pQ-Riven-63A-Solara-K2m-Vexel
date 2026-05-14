@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Daily Tracker</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500;700&family=Noto+Sans+JP:wght@400;500&display=swap');
+
+  :root {
+    --bg: #FAF6EE;
+    --surface: #FFFFFF;
+    --ink: #1F1B16;
+    --ink-muted: #6B655A;
+    --accent: #4A5A7A;
+    --accent-soft: #E8ECF3;
+    --border: #E5DDD0;
+    --success: #4F7A4A;
+    --danger: #B0463C;
+    --radius: 4px;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container {
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 24px 16px 80px;
+  }
+
+  header {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+  }
+
+  h1 {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 4px;
+    letter-spacing: 0.02em;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    color: var(--ink-muted);
+  }
+
+  .date-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .date-bar label {
+    font-size: 13px;
+    color: var(--ink-muted);
+  }
+
+  .date-bar input[type="date"] {
+    flex: 1;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    font-size: 15px;
+    font-family: inherit;
+    color: var(--ink);
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .card h2 {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 17px;
+    font-weight: 500;
+    margin: 0 0 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    letter-spacing: 0.02em;
+  }
+
+  .field {
+    margin-bottom: 14px;
+  }
+
+  .field-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  label.field-label {
+    display: block;
+    font-size: 13px;
+    color: var(--ink-muted);
+    margin-bottom: 4px;
+  }
+
+  input[type="time"],
+  input[type="number"],
+  input[type="text"],
+  input[type="url"],
+  select,
+  textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    font-size: 15px;
+    font-family: inherit;
+    color: var(--ink);
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 60px;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  button {
+    padding: 10px 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--ink);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+
+  button:hover { background: var(--bg); }
+  button:active { transform: translateY(1px); }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  button.primary {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+    font-weight: 500;
+  }
+  button.primary:hover { background: #3D4D6A; }
+
+  .meal-type-group {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+  }
+
+  .meal-type-group label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 14px;
+    cursor: pointer;
+    background: var(--surface);
+  }
+
+  .meal-type-group input[type="radio"] { display: none; }
+
+  .meal-type-group label:has(input:checked) {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+  }
+
+  /* ルーティン項目 */
+  .routine-hint {
+    font-size: 12px;
+    color: var(--ink-muted);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--border);
+  }
+
+  .routine-item {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .routine-item:last-child { border-bottom: none; padding-bottom: 0; }
+
+  .routine-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+    gap: 8px;
+  }
+
+  .routine-item-name {
+    font-weight: 500;
+    font-size: 15px;
+  }
+
+  .routine-item-meta {
+    font-size: 11px;
+    color: var(--ink-muted);
+    white-space: nowrap;
+    background: var(--bg);
+    padding: 2px 6px;
+    border-radius: var(--radius);
+  }
+
+  .binary-toggle {
+    display: flex;
+    gap: 8px;
+  }
+
+  .binary-toggle button {
+    flex: 1;
+    padding: 10px;
+    font-size: 15px;
+    font-weight: 500;
+  }
+  .binary-toggle button.flash-ok {
+    background: var(--success);
+    color: white;
+    border-color: var(--success);
+  }
+  .binary-toggle button.flash-ng {
+    background: var(--danger);
+    color: white;
+    border-color: var(--danger);
+  }
+
+  .numeric-row {
+    display: flex;
+    gap: 8px;
+  }
+  .numeric-row input { flex: 1; }
+
+  .routine-history {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--ink-muted);
+    min-height: 14px;
+    line-height: 1.6;
+  }
+  .routine-history-prefix {
+    color: var(--ink-muted);
+    opacity: 0.6;
+    margin-right: 4px;
+  }
+  .routine-history-entry {
+    display: inline-block;
+    margin-right: 8px;
+  }
+  .routine-history-time {
+    opacity: 0.55;
+    font-size: 11px;
+    margin-left: 2px;
+  }
+  .routine-history-empty {
+    font-style: italic;
+    opacity: 0.5;
+  }
+
+  /* 食事履歴 */
+  .meal-history {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+  .meal-history-item {
+    font-size: 13px;
+    color: var(--ink-muted);
+    padding: 4px 0;
+  }
+  .meal-history-empty {
+    font-size: 13px;
+    color: var(--ink-muted);
+    font-style: italic;
+  }
+
+  /* ステータス */
+  .status-message {
+    padding: 10px 12px;
+    border-radius: var(--radius);
+    margin-bottom: 12px;
+    font-size: 13px;
+    display: none;
+    position: sticky;
+    top: 8px;
+    z-index: 5;
+  }
+  .status-message.show { display: block; }
+  .status-message.success {
+    background: #E8F2E6;
+    color: var(--success);
+    border: 1px solid #C5DCC0;
+  }
+  .status-message.error {
+    background: #F7E5E3;
+    color: var(--danger);
+    border: 1px solid #E5BFBA;
+  }
+
+  .button-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .button-row button { flex: 1; }
+
+  .settings-link {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 13px;
+  }
+  .settings-link a {
+    color: var(--ink-muted);
+    text-decoration: underline;
+  }
+
+  /* セットアップ画面 */
+  .setup-screen {
+    max-width: 480px;
+    margin: 60px auto;
+    padding: 24px;
+  }
+  .setup-screen h1 { margin-bottom: 16px; }
+  .setup-screen p {
+    color: var(--ink-muted);
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+  .setup-screen .field { margin-bottom: 16px; }
+
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(31, 27, 22, 0.4);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    padding: 16px;
+  }
+  .modal-backdrop.show { display: flex; }
+  .modal {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 24px;
+    max-width: 480px;
+    width: 100%;
+  }
+  .modal h2 {
+    font-family: 'Noto Serif JP', serif;
+    margin-top: 0;
+    font-size: 18px;
+  }
+
+  @media (max-width: 480px) {
+    .container { padding: 16px 12px 60px; }
+    .card { padding: 16px; }
+    h1 { font-size: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- セットアップ画面 -->
+<div id="setup" class="setup-screen" style="display:none">
+  <h1>セットアップ</h1>
+  <p>初回起動です。Apps Script のウェブアプリ URL を入力してください。
+    （setup_guide.md に記載の手順でデプロイ後に取得できます）</p>
+  <div class="field">
+    <label class="field-label" for="setup-url">Apps Script URL</label>
+    <input type="url" id="setup-url" placeholder="https://script.google.com/macros/s/.../exec">
+  </div>
+  <button class="primary" onclick="saveSetup()">保存して開始</button>
+</div>
+
+<!-- メイン画面 -->
+<div id="main" class="container" style="display:none">
+
+  <header>
+    <h1>Daily Tracker</h1>
+    <div class="subtitle">起床・食事・ルーティン記録</div>
+  </header>
+
+  <div class="date-bar">
+    <label for="date">記録日:</label>
+    <input type="date" id="date">
+  </div>
+
+  <div id="status" class="status-message"></div>
+
+  <!-- 睡眠カード -->
+  <section class="card">
+    <h2>睡眠</h2>
+    <div class="field">
+      <label class="field-label">起床時刻</label>
+      <div class="field-row">
+        <input type="time" id="wake-time">
+        <button onclick="setNow('wake-time')">今すぐ</button>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">入眠時刻（昨夜）</label>
+      <div class="field-row">
+        <input type="time" id="sleep-time">
+        <button onclick="setNow('sleep-time')">今すぐ</button>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">メモ</label>
+      <textarea id="sleep-note" rows="2" placeholder="任意"></textarea>
+    </div>
+    <button class="primary" onclick="submitSleep()" id="sleep-submit">睡眠を記録</button>
+  </section>
+
+  <!-- 食事カード -->
+  <section class="card">
+    <h2>食事</h2>
+    <div class="field">
+      <label class="field-label">区分</label>
+      <div class="meal-type-group">
+        <label><input type="radio" name="meal-type" value="朝" checked><span>朝</span></label>
+        <label><input type="radio" name="meal-type" value="昼"><span>昼</span></label>
+        <label><input type="radio" name="meal-type" value="夕"><span>夕</span></label>
+        <label><input type="radio" name="meal-type" value="間食"><span>間食</span></label>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">時刻</label>
+      <div class="field-row">
+        <input type="time" id="meal-time">
+        <button onclick="setNow('meal-time')">今すぐ</button>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">メニュー</label>
+      <textarea id="meal-menu" rows="3" placeholder="例: ご飯、味噌汁、納豆、焼き鮭"></textarea>
+    </div>
+    <button class="primary" onclick="submitMeal()" id="meal-submit">食事を追加</button>
+
+    <div class="meal-history" id="meal-history">
+      <div class="meal-history-empty">今日の記録はまだありません</div>
+    </div>
+  </section>
+
+  <!-- ルーティンカード -->
+  <section class="card">
+    <h2>ルーティン</h2>
+    <div class="routine-hint">各項目は独立して即時記録されます。1日に複数回の記録も可能です。</div>
+    <div id="routine-list">
+      <div class="meal-history-empty">読み込み中...</div>
+    </div>
+  </section>
+
+  <div class="settings-link">
+    <a href="#" onclick="openSettings(event)">設定</a>
+  </div>
+</div>
+
+<!-- 設定モーダル -->
+<div id="settings-modal" class="modal-backdrop" onclick="if(event.target===this) closeSettings()">
+  <div class="modal">
+    <h2>設定</h2>
+    <div class="field">
+      <label class="field-label" for="settings-url">Apps Script URL</label>
+      <input type="url" id="settings-url">
+    </div>
+    <div class="button-row">
+      <button onclick="closeSettings()">キャンセル</button>
+      <button class="primary" onclick="saveSettings()">保存</button>
+    </div>
+    <div style="margin-top: 16px; font-size: 12px; color: var(--ink-muted);">
+      バージョン 1.1
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+const STORAGE_KEY = 'tracker_apps_script_url';
+let scriptUrl = '';
+let routineItems = [];
+let routineHistory = {}; // item_id -> [{value, timestamp, note}, ...]
+
+// ============================================================
+// 初期化
+// ============================================================
+
+window.addEventListener('load', () => {
+  scriptUrl = localStorage.getItem(STORAGE_KEY) || '';
+  if (!scriptUrl) {
+    document.getElementById('setup').style.display = 'block';
+    return;
+  }
+  document.getElementById('main').style.display = 'block';
+  initializeApp();
+});
+
+function initializeApp() {
+  const today = formatDate(new Date());
+  document.getElementById('date').value = today;
+  document.getElementById('date').addEventListener('change', loadData);
+  document.getElementById('meal-time').value = formatTime(new Date());
+  loadData();
+}
+
+function saveSetup() {
+  const url = document.getElementById('setup-url').value.trim();
+  if (!url) { alert('URL を入力してください'); return; }
+  localStorage.setItem(STORAGE_KEY, url);
+  scriptUrl = url;
+  document.getElementById('setup').style.display = 'none';
+  document.getElementById('main').style.display = 'block';
+  initializeApp();
+}
+
+// ============================================================
+// 設定モーダル
+// ============================================================
+
+function openSettings(e) {
+  if (e) e.preventDefault();
+  document.getElementById('settings-url').value = scriptUrl;
+  document.getElementById('settings-modal').classList.add('show');
+}
+
+function closeSettings() {
+  document.getElementById('settings-modal').classList.remove('show');
+}
+
+function saveSettings() {
+  const url = document.getElementById('settings-url').value.trim();
+  if (!url) return;
+  localStorage.setItem(STORAGE_KEY, url);
+  scriptUrl = url;
+  closeSettings();
+  loadData();
+}
+
+// ============================================================
+// データ読み込み
+// ============================================================
+
+async function loadData() {
+  await Promise.all([loadRoutineItems(), loadDailyData()]);
+}
+
+async function loadRoutineItems() {
+  const date = document.getElementById('date').value;
+  try {
+    const res = await fetch(scriptUrl + '?action=items&date=' + date);
+    const data = await res.json();
+    routineItems = data.items || [];
+    renderRoutineItems();
+  } catch (err) {
+    document.getElementById('routine-list').innerHTML =
+      '<div class="meal-history-empty">読み込みに失敗しました</div>';
+  }
+}
+
+async function loadDailyData() {
+  const date = document.getElementById('date').value;
+  try {
+    const res = await fetch(scriptUrl + '?action=daily&date=' + date);
+    const data = await res.json();
+
+    if (data.sleep) {
+      if (data.sleep.wake_time)  document.getElementById('wake-time').value  = formatTimeValue(data.sleep.wake_time);
+      if (data.sleep.sleep_time) document.getElementById('sleep-time').value = formatTimeValue(data.sleep.sleep_time);
+      if (data.sleep.note)       document.getElementById('sleep-note').value = data.sleep.note;
+    }
+
+    renderMealHistory(data.meals || []);
+
+    routineHistory = data.routines || {};
+    Object.keys(routineHistory).forEach(itemId => updateRoutineHistory(itemId));
+  } catch (err) {
+    // 静かに失敗
+  }
+}
+
+function formatTimeValue(val) {
+  if (!val) return '';
+  if (typeof val === 'string' && /^\d{2}:\d{2}/.test(val)) {
+    return val.substring(0, 5);
+  }
+  try { return formatTime(new Date(val)); } catch (e) { return ''; }
+}
+
+// ============================================================
+// ルーティンUI生成
+// ============================================================
+
+function renderRoutineItems() {
+  const list = document.getElementById('routine-list');
+  if (routineItems.length === 0) {
+    list.innerHTML = '<div class="meal-history-empty">今日有効な項目がありません</div>';
+    return;
+  }
+  list.innerHTML = routineItems.map(item => renderRoutineItem(item)).join('');
+  routineItems.forEach(item => updateRoutineHistory(item.item_id));
+}
+
+function renderRoutineItem(item) {
+  const unitText = item.unit ? '（' + escapeHtml(item.unit) + '）' : '';
+  let inputHtml = '';
+
+  if (item.type === 'binary') {
+    inputHtml = `
+      <div class="binary-toggle">
+        <button onclick="recordBinary('${item.item_id}', '◯', this)">◯ できた</button>
+        <button onclick="recordBinary('${item.item_id}', '×', this)">× できなかった</button>
+      </div>
+    `;
+  } else {
+    // numeric / timed - どちらも数値入力（暗算秒数など）
+    const placeholder = item.unit ? escapeHtml(item.unit) + ' を入力' : '値を入力';
+    inputHtml = `
+      <div class="numeric-row">
+        <input type="number" step="0.01" inputmode="decimal"
+               id="input-${item.item_id}"
+               placeholder="${placeholder}">
+        <button onclick="recordNumeric('${item.item_id}', this)">記録</button>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="routine-item">
+      <div class="routine-item-header">
+        <div class="routine-item-name">${escapeHtml(item.name)}${unitText}</div>
+        <div class="routine-item-meta">${escapeHtml(item.type)}</div>
+      </div>
+      ${inputHtml}
+      <div class="routine-history" id="history-${item.item_id}"></div>
+    </div>
+  `;
+}
+
+function updateRoutineHistory(itemId) {
+  const el = document.getElementById('history-' + itemId);
+  if (!el) return;
+  const entries = routineHistory[itemId] || [];
+  if (entries.length === 0) {
+    el.innerHTML = '<span class="routine-history-empty">今日の記録なし</span>';
+    return;
+  }
+  const parts = entries.map(e => {
+    const time = e.timestamp ? formatTimeFromTimestamp(e.timestamp) : '';
+    return `<span class="routine-history-entry">${escapeHtml(String(e.value))}<span class="routine-history-time">${time ? '(' + time + ')' : ''}</span></span>`;
+  });
+  const countLabel = entries.length > 1 ? `今日 ${entries.length}回:` : '今日:';
+  el.innerHTML = `<span class="routine-history-prefix">${countLabel}</span>` + parts.join('');
+}
+
+function formatTimeFromTimestamp(ts) {
+  try {
+    const d = new Date(ts);
+    if (isNaN(d.getTime())) return '';
+    return formatTime(d);
+  } catch (e) { return ''; }
+}
+
+// ============================================================
+// ルーティン記録（即時送信）
+// ============================================================
+
+async function recordBinary(itemId, value, btn) {
+  const parent = btn.parentElement;
+  const buttons = parent.querySelectorAll('button');
+  buttons.forEach(b => b.disabled = true);
+
+  const flashClass = value === '◯' ? 'flash-ok' : 'flash-ng';
+  btn.classList.add(flashClass);
+
+  try {
+    await sendRoutineRecord(itemId, value);
+    showStatus('記録しました', 'success');
+  } catch (err) {
+    showStatus('送信失敗: ' + err.message, 'error');
+  } finally {
+    buttons.forEach(b => b.disabled = false);
+    setTimeout(() => btn.classList.remove(flashClass), 500);
+  }
+}
+
+async function recordNumeric(itemId, btn) {
+  const inputEl = document.getElementById('input-' + itemId);
+  const value = inputEl.value.trim();
+  if (value === '') {
+    showStatus('値を入力してください', 'error');
+    return;
+  }
+
+  btn.disabled = true;
+  inputEl.disabled = true;
+
+  try {
+    await sendRoutineRecord(itemId, value);
+    inputEl.value = '';
+    showStatus('記録しました', 'success');
+  } catch (err) {
+    showStatus('送信失敗: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    inputEl.disabled = false;
+  }
+}
+
+async function sendRoutineRecord(itemId, value) {
+  const date = document.getElementById('date').value;
+  const payload = {
+    type: 'routine',
+    date: date,
+    items: [{ item_id: itemId, value: String(value) }],
+  };
+  await postData(payload);
+
+  // ローカル履歴に追加（再fetchなしで即時反映）
+  if (!routineHistory[itemId]) routineHistory[itemId] = [];
+  routineHistory[itemId].push({
+    value: value,
+    timestamp: new Date().toISOString(),
+  });
+  updateRoutineHistory(itemId);
+}
+
+// ============================================================
+// 食事
+// ============================================================
+
+function renderMealHistory(meals) {
+  const el = document.getElementById('meal-history');
+  if (meals.length === 0) {
+    el.innerHTML = '<div class="meal-history-empty">今日の記録はまだありません</div>';
+    return;
+  }
+  el.innerHTML = meals.map(m => {
+    const time = m.meal_time ? formatTimeValue(m.meal_time) : '';
+    return `<div class="meal-history-item">
+      <strong>${escapeHtml(m.meal_type || '')}</strong>
+      ${time ? ' ' + escapeHtml(time) : ''}
+      ${m.menu ? ' — ' + escapeHtml(m.menu) : ''}
+    </div>`;
+  }).join('');
+}
+
+async function submitMeal() {
+  const btn = document.getElementById('meal-submit');
+  btn.disabled = true;
+  try {
+    const mealType = document.querySelector('input[name="meal-type"]:checked').value;
+    const menu = document.getElementById('meal-menu').value.trim();
+    if (!menu) {
+      showStatus('メニューを入力してください', 'error');
+      btn.disabled = false;
+      return;
+    }
+    const payload = {
+      type: 'meal',
+      date: document.getElementById('date').value,
+      meal_type: mealType,
+      meal_time: document.getElementById('meal-time').value,
+      menu: menu,
+    };
+    await postData(payload);
+    showStatus(mealType + 'を記録しました', 'success');
+    document.getElementById('meal-menu').value = '';
+
+    const res = await fetch(scriptUrl + '?action=daily&date=' + document.getElementById('date').value);
+    const data = await res.json();
+    renderMealHistory(data.meals || []);
+  } catch (err) {
+    showStatus('送信失敗: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// ============================================================
+// 睡眠
+// ============================================================
+
+async function submitSleep() {
+  const btn = document.getElementById('sleep-submit');
+  btn.disabled = true;
+  try {
+    const payload = {
+      type: 'sleep',
+      date: document.getElementById('date').value,
+      wake_time: document.getElementById('wake-time').value,
+      sleep_time: document.getElementById('sleep-time').value,
+      note: document.getElementById('sleep-note').value,
+    };
+    await postData(payload);
+    showStatus('睡眠を記録しました', 'success');
+  } catch (err) {
+    showStatus('送信失敗: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// ============================================================
+// 通信
+// ============================================================
+
+async function postData(payload) {
+  // Apps Script の CORS 制約により Content-Type ヘッダは明示しない
+  const res = await fetch(scriptUrl, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error);
+  return data;
+}
+
+// ============================================================
+// ユーティリティ
+// ============================================================
+
+function setNow(inputId) {
+  document.getElementById(inputId).value = formatTime(new Date());
+}
+
+function formatDate(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return y + '-' + m + '-' + day;
+}
+
+function formatTime(d) {
+  const h = String(d.getHours()).padStart(2, '0');
+  const m = String(d.getMinutes()).padStart(2, '0');
+  return h + ':' + m;
+}
+
+function showStatus(message, type) {
+  const el = document.getElementById('status');
+  el.textContent = message;
+  el.className = 'status-message show ' + type;
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+function escapeHtml(s) {
+  if (s == null) return '';
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+</script>
+
+</body>
+</html>
